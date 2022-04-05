@@ -31,7 +31,22 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 102400
+
+#define LED1_PIN                                GPIO_PIN_7
+#define LED1_GPIO_PORT                          GPIOC
+#define LED1_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOC_CLK_ENABLE()
+#define LED1_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOC_CLK_DISABLE()
+
+#define LED2_PIN                                GPIO_PIN_7
+#define LED2_GPIO_PORT                          GPIOB
+#define LED2_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOB_CLK_ENABLE()
+#define LED2_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOB_CLK_DISABLE()
+
+#define LED3_PIN                                GPIO_PIN_14
+#define LED3_GPIO_PORT                          GPIOB
+#define LED3_GPIO_CLK_ENABLE()                  __HAL_RCC_GPIOB_CLK_ENABLE()
+#define LED3_GPIO_CLK_DISABLE()                 __HAL_RCC_GPIOB_CLK_DISABLE()
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -51,10 +66,9 @@ TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN PV */
 int16_t adc_data[BUFFER_SIZE];
-int16_t dac_data[BUFFER_SIZE];
 
-static volatile int16_t *in_buf_ptr;
-static volatile int16_t *out_buf_ptr = &dac_data[0];
+static volatile int16_t *in_buf_ptr = &adc_data[0];
+static volatile int16_t *out_buf_ptr = &adc_data[0];
 
 uint8_t data_ready_flag;
 
@@ -74,7 +88,23 @@ static void MX_TIM6_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc) {
+	if (hadc->Instance == ADC1) {
 
+		//update_pots(&adc_buffer[BUFFER_SIZE]);
+
+	}
+}
+
+// Contrary to the name this callback actually handles both channels
+void HAL_DAC_ConvCpltCallbackCh1(DAC_HandleTypeDef *hdac) {
+
+	//out_buf_ptr = &adc_data[];
+	//dac2_buffer_ptr = &dac2_buffer[BUFFER_SIZE];
+
+	//update_osc_buffers();
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -111,19 +141,34 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-HAL_ADC_Start_DMA(&hadc1, adc_data, 1);
-HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, adc_data, 1,
+  //HAL_ADC_Start_DMA(&hadc1, adc_data, 1);
+  //HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, adc_data, 1,
+  //		DAC_ALIGN_12B_R);
+
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_data, BUFFER_SIZE);
+
+  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t *)adc_data, BUFFER_SIZE,
 		DAC_ALIGN_12B_R);
-HAL_TIM_Base_Start(&htim3);
-HAL_TIM_Base_Start(&htim6);
+
+  HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_Base_Start(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint32_t then = 0;
   while (1)
   {
     /* USER CODE END WHILE */
+		uint32_t now = HAL_GetTick();
+		if ((now-then) > 200) {
 
+			// Let's toggle the built in led just to show we're alive and well
+			//HAL_GPIO_TogglePin(LED1_GPIO_PORT, LED1_PIN);
+			HAL_GPIO_TogglePin(LED2_GPIO_PORT, LED2_PIN);
+
+			then = now;
+		}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -303,7 +348,7 @@ static void MX_TIM3_Init(void)
 
   /* USER CODE END TIM3_Init 1 */
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 40-1;
+  htim3.Init.Prescaler = 4-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim3.Init.Period = 10-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -359,9 +404,9 @@ static void MX_TIM6_Init(void)
 
   /* USER CODE END TIM6_Init 1 */
   htim6.Instance = TIM6;
-  htim6.Init.Prescaler = 40-1;
+  htim6.Init.Prescaler = 4-1;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 10-1;
+  htim6.Init.Period = 20-1;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
