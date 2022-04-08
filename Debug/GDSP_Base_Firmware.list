@@ -21,9 +21,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, DATA
   8 .data         0000000c  20000000  0800597c  00020000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          000321c4  2000000c  08005988  0002000c  2**2
+  9 .bss          00030f04  2000000c  08005988  0002000c  2**2
                   ALLOC
- 10 ._user_heap_stack 00000600  200321d0  08005988  000221d0  2**0
+ 10 ._user_heap_stack 00000600  20030f10  08005988  00020f10  2**0
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0002000c  2**0
                   CONTENTS, READONLY
@@ -166,60 +166,61 @@ int main(void)
   //		DAC_ALIGN_12B_R);
 
   HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_data, BUFFER_SIZE);
- 800023a:	f44f 32c8 	mov.w	r2, #102400	; 0x19000
- 800023e:	4912      	ldr	r1, [pc, #72]	; (8000288 <main+0x74>)
- 8000240:	4812      	ldr	r0, [pc, #72]	; (800028c <main+0x78>)
- 8000242:	f001 f883 	bl	800134c <HAL_ADC_Start_DMA>
+ 800023a:	4a12      	ldr	r2, [pc, #72]	; (8000284 <main+0x70>)
+ 800023c:	4912      	ldr	r1, [pc, #72]	; (8000288 <main+0x74>)
+ 800023e:	4813      	ldr	r0, [pc, #76]	; (800028c <main+0x78>)
+ 8000240:	f001 f884 	bl	800134c <HAL_ADC_Start_DMA>
 
   HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t *)adc_data, BUFFER_SIZE,
- 8000246:	2300      	movs	r3, #0
- 8000248:	9300      	str	r3, [sp, #0]
- 800024a:	f44f 33c8 	mov.w	r3, #102400	; 0x19000
- 800024e:	4a0e      	ldr	r2, [pc, #56]	; (8000288 <main+0x74>)
- 8000250:	2100      	movs	r1, #0
- 8000252:	480f      	ldr	r0, [pc, #60]	; (8000290 <main+0x7c>)
- 8000254:	f002 f856 	bl	8002304 <HAL_DAC_Start_DMA>
+ 8000244:	2300      	movs	r3, #0
+ 8000246:	9300      	str	r3, [sp, #0]
+ 8000248:	4b0e      	ldr	r3, [pc, #56]	; (8000284 <main+0x70>)
+ 800024a:	4a0f      	ldr	r2, [pc, #60]	; (8000288 <main+0x74>)
+ 800024c:	2100      	movs	r1, #0
+ 800024e:	4810      	ldr	r0, [pc, #64]	; (8000290 <main+0x7c>)
+ 8000250:	f002 f858 	bl	8002304 <HAL_DAC_Start_DMA>
 		DAC_ALIGN_12B_R);
 
   HAL_TIM_Base_Start(&htim3);
- 8000258:	480e      	ldr	r0, [pc, #56]	; (8000294 <main+0x80>)
- 800025a:	f004 fa8b 	bl	8004774 <HAL_TIM_Base_Start>
+ 8000254:	480f      	ldr	r0, [pc, #60]	; (8000294 <main+0x80>)
+ 8000256:	f004 fa8d 	bl	8004774 <HAL_TIM_Base_Start>
   HAL_TIM_Base_Start(&htim6);
- 800025e:	480e      	ldr	r0, [pc, #56]	; (8000298 <main+0x84>)
- 8000260:	f004 fa88 	bl	8004774 <HAL_TIM_Base_Start>
+ 800025a:	480f      	ldr	r0, [pc, #60]	; (8000298 <main+0x84>)
+ 800025c:	f004 fa8a 	bl	8004774 <HAL_TIM_Base_Start>
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   uint32_t then = 0;
- 8000264:	2300      	movs	r3, #0
- 8000266:	607b      	str	r3, [r7, #4]
+ 8000260:	2300      	movs	r3, #0
+ 8000262:	607b      	str	r3, [r7, #4]
   while (1)
   {
     /* USER CODE END WHILE */
 		uint32_t now = HAL_GetTick();
- 8000268:	f000 fcfe 	bl	8000c68 <HAL_GetTick>
- 800026c:	6038      	str	r0, [r7, #0]
+ 8000264:	f000 fd00 	bl	8000c68 <HAL_GetTick>
+ 8000268:	6038      	str	r0, [r7, #0]
 		if ((now-then) > 200) {
- 800026e:	683a      	ldr	r2, [r7, #0]
- 8000270:	687b      	ldr	r3, [r7, #4]
- 8000272:	1ad3      	subs	r3, r2, r3
- 8000274:	2bc8      	cmp	r3, #200	; 0xc8
- 8000276:	d9f7      	bls.n	8000268 <main+0x54>
+ 800026a:	683a      	ldr	r2, [r7, #0]
+ 800026c:	687b      	ldr	r3, [r7, #4]
+ 800026e:	1ad3      	subs	r3, r2, r3
+ 8000270:	2bc8      	cmp	r3, #200	; 0xc8
+ 8000272:	d9f7      	bls.n	8000264 <main+0x50>
 
 			// Let's toggle the built in led just to show we're alive and well
 			//HAL_GPIO_TogglePin(LED1_GPIO_PORT, LED1_PIN);
 			HAL_GPIO_TogglePin(LED2_GPIO_PORT, LED2_PIN);
- 8000278:	2180      	movs	r1, #128	; 0x80
- 800027a:	4808      	ldr	r0, [pc, #32]	; (800029c <main+0x88>)
- 800027c:	f002 fed6 	bl	800302c <HAL_GPIO_TogglePin>
+ 8000274:	2180      	movs	r1, #128	; 0x80
+ 8000276:	4809      	ldr	r0, [pc, #36]	; (800029c <main+0x88>)
+ 8000278:	f002 fed8 	bl	800302c <HAL_GPIO_TogglePin>
 
 			then = now;
- 8000280:	683b      	ldr	r3, [r7, #0]
- 8000282:	607b      	str	r3, [r7, #4]
+ 800027c:	683b      	ldr	r3, [r7, #0]
+ 800027e:	607b      	str	r3, [r7, #4]
   {
- 8000284:	e7f0      	b.n	8000268 <main+0x54>
- 8000286:	bf00      	nop
+ 8000280:	e7f0      	b.n	8000264 <main+0x50>
+ 8000282:	bf00      	nop
+ 8000284:	000186a0 	.word	0x000186a0
  8000288:	200001cc 	.word	0x200001cc
  800028c:	20000028 	.word	0x20000028
  8000290:	200000d8 	.word	0x200000d8
@@ -640,9 +641,9 @@ static void MX_TIM3_Init(void)
  80004c2:	4b28      	ldr	r3, [pc, #160]	; (8000564 <MX_TIM3_Init+0xe0>)
  80004c4:	2200      	movs	r2, #0
  80004c6:	609a      	str	r2, [r3, #8]
-  htim3.Init.Period = 10-1;
+  htim3.Init.Period = 5-1;
  80004c8:	4b26      	ldr	r3, [pc, #152]	; (8000564 <MX_TIM3_Init+0xe0>)
- 80004ca:	2209      	movs	r2, #9
+ 80004ca:	2204      	movs	r2, #4
  80004cc:	60da      	str	r2, [r3, #12]
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
  80004ce:	4b25      	ldr	r3, [pc, #148]	; (8000564 <MX_TIM3_Init+0xe0>)
@@ -1946,7 +1947,7 @@ LoopForever:
   ldr r2, =_sbss
  8000b8c:	2000000c 	.word	0x2000000c
   ldr r4, =_ebss
- 8000b90:	200321d0 	.word	0x200321d0
+ 8000b90:	20030f10 	.word	0x20030f10
 
 08000b94 <ADC1_2_IRQHandler>:
  * @retval : None
@@ -2125,7 +2126,7 @@ __weak void HAL_IncTick(void)
  8000c5c:	4770      	bx	lr
  8000c5e:	bf00      	nop
  8000c60:	20000008 	.word	0x20000008
- 8000c64:	200321cc 	.word	0x200321cc
+ 8000c64:	20030f0c 	.word	0x20030f0c
 
 08000c68 <HAL_GetTick>:
   * @note This function is declared as __weak to be overwritten in case of other
@@ -2145,7 +2146,7 @@ __weak uint32_t HAL_GetTick(void)
  8000c74:	f85d 7b04 	ldr.w	r7, [sp], #4
  8000c78:	4770      	bx	lr
  8000c7a:	bf00      	nop
- 8000c7c:	200321cc 	.word	0x200321cc
+ 8000c7c:	20030f0c 	.word	0x20030f0c
 
 08000c80 <HAL_Delay>:
   *       implementations in user file.
