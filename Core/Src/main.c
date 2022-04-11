@@ -153,10 +153,7 @@ int main(void)
   //HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, adc_data, 1,
   //		DAC_ALIGN_12B_R);
 
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_data, BUFFER_SIZE);
 
-  HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t *)adc_data, BUFFER_SIZE,
-		DAC_ALIGN_12B_R);
 
   HAL_TIM_Base_Start(&htim3);
   HAL_TIM_Base_Start(&htim6);
@@ -167,16 +164,25 @@ int main(void)
   uint32_t then = 0;
   while (1)
   {
-    /* USER CODE END WHILE */
 		uint32_t now = HAL_GetTick();
-		if ((now-then) > 200) {
+		if ((now-then) > 5000) {
 
 			// Let's toggle the built in led just to show we're alive and well
 			//HAL_GPIO_TogglePin(LED1_GPIO_PORT, LED1_PIN);
 			HAL_GPIO_TogglePin(LED2_GPIO_PORT, LED2_PIN);
 
+			HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_data, BUFFER_SIZE);
+			HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t *)adc_data, BUFFER_SIZE,
+					DAC_ALIGN_12B_R);
+
+
+
+
+
 			then = now;
 		}
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -358,7 +364,7 @@ static void MX_TIM3_Init(void)
   htim3.Instance = TIM3;
   htim3.Init.Prescaler = 4-1;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 5-1;
+  htim3.Init.Period = 10-1;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -414,7 +420,7 @@ static void MX_TIM6_Init(void)
   htim6.Instance = TIM6;
   htim6.Init.Prescaler = 4-1;
   htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim6.Init.Period = 20-1;
+  htim6.Init.Period = 50-1;
   htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
   {
